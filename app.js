@@ -17,7 +17,7 @@ app.use(download)
 
 app.use(express.static(path.join(__dirname, "View")))
 
-app.listen(10086, "0.0.0.0", (error) => {
+app.listen(80, "0.0.0.0", (error) => {
     if (error) {
         console.error(log.OutputAndWrite(error.message))
         return
