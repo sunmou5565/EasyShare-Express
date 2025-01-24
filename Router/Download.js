@@ -26,18 +26,19 @@ module.exports = router.get("/download/:key", (req, res) => {
                     console.error(log.OutputAndWrite(error.message))
                 }
             })
-            res.download(path.join(__dirname,"../","access","file", rows[0]["Filename"]), (error) => {
+            res.download(path.join(__dirname, "../", "access", "file", rows[0]["Filename"]), (error) => {
                 if (error) {
                     console.log(log.OutputAndWrite(error.message))
-                } else {
-                    fs.rmSync(path.join(__dirname, "file", rows[0]["Filename"]), { force: true })
-                    db.run("delete from fileinfo where filekey = ?", [req.params.key], (error) => {
-                        if(error){
-                            console.error(log.OutputAndWrite(error.message))
-                        }
-                    })
-                    
                 }
+                console.log(log.OutputAndWrite(rows[0]["Filename"]))
+                fs.rmSync(path.join(__dirname,"../", "access", "file", rows[0]["Filename"]), { force: true })
+                db.run("delete from fileinfo where filekey = ?", [req.params.key], (error) => {
+                    if (error) {
+                        console.error(log.OutputAndWrite(error.message))
+                    }
+                })
+
+
             })
 
 
