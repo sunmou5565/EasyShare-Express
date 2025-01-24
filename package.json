@@ -4,7 +4,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --trace-deprecation ./app.js"
+    "dev": "node --trace-deprecation ./app.js",
+    "start": "node ./app.js"
   },
   "keywords": [],
   "author": "",
