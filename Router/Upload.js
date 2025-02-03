@@ -3,13 +3,10 @@ const router = express.Router()
 
 const multer = require("multer")
 
-const crypto = require("crypto")
-
-const sqlite3 = require("sqlite3")
-
 const path = require("path")
 
 const log = require("../CreateLog")
+const func = require("./func/otherfunc")
 
 let now = ""
 
@@ -17,10 +14,12 @@ function Createdate() {
     now = Date.now()
 }
 
+//创建storage控制器
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, path.join(__dirname,"../","access","file"))
+        cb(null, path.join(__dirname, "../", "access", "file"))
     },
+    //文件命名逻辑
     filename: function (req, file, cb) {
         Createdate()
         let name = file.originalname
@@ -33,33 +32,18 @@ const storage = multer.diskStorage({
             name = Buffer.from(name, "utf-8").toString("base64") + type
         }
 
-        SqlWrite(file.originalname, path.join(__dirname,"../","access","file",now + ";" + name), generateKey(now + ";" + file.originalname))
+        func.SqlWrite(file.originalname, path.join(__dirname, "../", "access", "file", now + ";" + name), func.generateKey(now + ";" + file.originalname))
         cb(null, now + ";" + name)
     }
 })
 const upload = multer({ storage: storage })
 
-function generateKey(filename) {
-    const md5 = crypto.createHash("md5");
-    return md5.update(filename).digest("hex").substring(0, 5);
-}
-
-function SqlWrite(filename, filepath, filekey) {
-    const db = new sqlite3.Database(path.join(__dirname,"../","access","db","File.db"))
-    db.run("insert into fileinfo(filename,filekey,filepath) values(?,?,?)", [filename, filekey, filepath], (error) => {
-        if (error) {
-            console.error(log.OutputAndWrite(error.message))
-        }
-    })
-    key = ""
-    db.close()
-}
 
 module.exports = router.post("/upload", upload.single("file"), (req, res) => {
     if (!req.file) {
         return res.send("ERR!")
     }
-    let key = generateKey(now + ";" + req.file.originalname)
+    let key = func.generateKey(now + ";" + req.file.originalname)
     console.log(log.OutputAndWrite(`Uploaded:${req.file.originalname}`))
     res.json({ message: key })
 })
